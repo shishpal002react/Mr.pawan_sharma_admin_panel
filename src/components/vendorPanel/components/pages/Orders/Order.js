@@ -11,7 +11,7 @@ const Order = () => {
 
   const fetchData = async () => {
     try {
-      const { data } = await axios.get(`${Baseurl}api/v1/admin/orders`, {
+      const { data } = await axios.get(`${Baseurl}api/admin/order`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -25,8 +25,6 @@ const Order = () => {
   useEffect(() => {
     fetchData();
   }, []);
-
-
 
   return (
     <>
@@ -54,23 +52,23 @@ const Order = () => {
               </tr>
             </thead>
             <tbody>
-              {data?.data?.map((i, index) => (
+              {data?.orders?.map((i, index) => (
                 <tr key={index}>
-                  <td>{i.orderId} </td>
-                  <td>{i?.Orders?.[0]?.user?.name} </td>
-                  <td>{i?.Orders?.[0]?.user?.phone} </td>
+                  <td>{i._id} </td>
+                  <td>{i?.user?.userName} </td>
+                  <td>{i?.user?.mobileNumber} </td>
                   <td>{i.discount} </td>
                   <td>{i.shippingPrice} </td>
                   <td>{i.amountToBePaid} </td>
                   <td>
                     <ul style={{ listStyle: "disc" }}>
-                      {i.Orders?.map((item) => (
-                        <li key={item._id}> {item?.product?.name} </li>
+                      {i.products?.map((item) => (
+                        <li key={item._id}> {item?.product?.productName} </li>
                       ))}
                     </ul>
                   </td>
                   <td>{i.paymentStatus} </td>
-                  <td>{i.orderStatus} </td>
+                  <td>{i.status} </td>
                 </tr>
               ))}
             </tbody>

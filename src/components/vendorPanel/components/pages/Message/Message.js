@@ -17,10 +17,12 @@ const MSG = () => {
 
   const fetchData = async () => {
     try {
-      const { data } = await axios.get(
-        `${Baseurl}api/v1/notify/Admin/Notification`
-      );
-      setData(data.message);
+      const { data } = await axios.get(`${Baseurl}api/admin/notifications`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setData(data.data.reverse());
     } catch (err) {
       console.log(err);
     }
@@ -33,10 +35,16 @@ const MSG = () => {
   const deleteData = async (id) => {
     try {
       const { data } = await axios.delete(
-        `${Baseurl}api/v1/notify/delete/${id}`
+        `${Baseurl}api/admin/notifications/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
       console.log(data);
       toast.success("Notification Deleted");
+      showMsg("Success", "Notification Deleted", "success");
       fetchData();
     } catch (e) {
       console.log(e);
@@ -45,13 +53,23 @@ const MSG = () => {
 
   function MyVerticallyCenteredModal(props) {
     const [message, setMessage] = useState("");
+    const [userId, setUserId] = useState("");
 
     const postData = async (e) => {
       e.preventDefault();
       try {
-        const { data } = await axios.post(`${Baseurl}api/v1/notify`, {
-          message,
-        });
+        const { data } = await axios.post(
+          `${Baseurl}api/admin/notifications`,
+          {
+            recipient: userId,
+            content: message,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         showMsg("Success", "Notification Created !", "success");
         props.onHide();
         fetchData();
@@ -59,6 +77,27 @@ const MSG = () => {
         console.log(e);
       }
     };
+
+    const [user, setUser] = useState([]);
+    const fetchData = async () => {
+      try {
+        const { data } = await axios.get(`${Baseurl}api/admin/users`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        console.log("user data", data.data);
+        setUser(data.users);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    useEffect(() => {
+      if (props.show === true) {
+        fetchData();
+      }
+    }, [props]);
 
     return (
       <Modal
@@ -79,9 +118,25 @@ const MSG = () => {
                 <Form.Control
                   as="textarea"
                   placeholder="Leave a comment here"
+                  value={message}
                   onChange={(e) => setMessage(e.target.value)}
                 />
               </FloatingLabel>
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>User </Form.Label>
+              <Form.Select
+                aria-label="Default select example"
+                onChange={(e) => setUserId(e.target.value)}
+              >
+                <option>Open this select menu</option>
+                {user?.map((i, index) => (
+                  <option value={i._id} key={index}>
+                    {" "}
+                    {i.userName}{" "}
+                  </option>
+                ))}
+              </Form.Select>
             </Form.Group>
 
             <Button variant="outline-success" type="submit">
@@ -101,7 +156,7 @@ const MSG = () => {
       />
 
       <section>
-        <div className="pb-4 sticky top-0  w-full flex justify-between items-center Heading_Container">
+        <div className="pb-4 w-full flex justify-between items-center Heading_Container">
           <span className="tracking-widest text-slate-900 font-semibold uppercase ">
             All Notification
           </span>
@@ -119,15 +174,18 @@ const MSG = () => {
           <Table>
             <thead>
               <tr>
-                <th>Notification</th>
-                <th>Date</th>
-                <th>Action</th>
+                <th>User ID/ Recipient</th>
+                <th>Content</th>
+                <th>Status</th>
+                <th>CreatedAt</th>
               </tr>
             </thead>
             <tbody>
               {data?.map((i, index) => (
                 <tr key={index}>
-                  <td>{i.message}</td>
+                  <td>{i.recipient}</td>
+                  <td>{i.content}</td>
+                  <td>{i.status}</td>
                   <td> {i.createdAt.slice(0, 10)} </td>
                   <td>
                     <i

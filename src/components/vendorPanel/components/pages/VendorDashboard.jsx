@@ -6,21 +6,23 @@ import { MdDashboardCustomize, MdOutlineLibraryBooks } from "react-icons/md";
 import { FaUserFriends } from "react-icons/fa";
 import axios from "axios";
 import { Baseurl } from "../../../../Baseurl";
+import { useNavigate } from "react-router-dom";
 
 const VendorDashboard = () => {
-  const [user, setUser] = useState(0);
+  const navigate = useNavigate();
+  const [user, setUser] = useState({});
   const [product, setProduct] = useState(0);
   const [order, setOrder] = useState(0);
   const [cat, setCat] = useState(0);
 
   const fetchUser = async () => {
     try {
-      const { data } = await axios.get(`${Baseurl}api/v1/admin/users`, {
+      const { data } = await axios.get(`${Baseurl}api/admin/count`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      setUser(data?.users?.length);
+      setUser(data?.data);
     } catch (err) {
       console.log(err);
     }
@@ -70,28 +72,45 @@ const VendorDashboard = () => {
     {
       progress: "bg-blue-400",
       title: "All Users",
-      number: user,
+      link: "/users",
+      number: user?.users,
       icon: <FaUserFriends className="text-2xl text-[#0D99FF]" />,
-    
     },
     {
       progress: "bg-green-400",
       title: "All Products",
-      number: product,
+      link: "/product",
+      number: user?.products,
       icon: <MdOutlineLibraryBooks className="text-2xl text-[#0D99FF]" />,
     },
     {
       progress: "bg-yellow-400",
       title: "All Orders",
-      number: order,
+      link: "/order",
+      number: user?.orders,
       icon: <MdDashboardCustomize className="text-2xl text-[#0D99FF]" />,
     },
     {
       progress: "bg-yellow-400",
       title: "All Categories",
-      number: cat,
+      link: "/category",
+      number: user?.categories,
       icon: <MdDashboardCustomize className="text-2xl text-[#0D99FF]" />,
     },
+    {
+      progress: "bg-yellow-400",
+      title: "All Sub Categories",
+      link: "/subcategory",
+      number: user?.subcategories,
+      icon: <MdDashboardCustomize className="text-2xl text-[#0D99FF]" />,
+    },
+    // {
+    //   progress: "bg-yellow-400",
+    //   title: "All Notifications",
+    //   link: "/users",
+    //   number: user?.notifications,
+    //   icon: <MdDashboardCustomize className="text-2xl text-[#0D99FF]" />,
+    // },
   ];
   return (
     <>
@@ -100,7 +119,10 @@ const VendorDashboard = () => {
         {card.map((card) => {
           return (
             <div className="px-5 py-8 bg-[#444444] space-y-2 shadow-xl flex flex-col  rounded-md">
-              <div className="grid  justify-between grid-cols-4">
+              <div
+                className="grid  justify-between grid-cols-4 cursor-pointer"
+                onClick={() => navigate(card.link)}
+              >
                 <div className="flex flex-col col-span-3 space-y-1">
                   <span className="tracking-widest text-[#fff]">
                     {card.title}

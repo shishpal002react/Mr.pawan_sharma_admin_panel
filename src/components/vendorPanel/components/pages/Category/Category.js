@@ -15,10 +15,13 @@ const Category = () => {
 
   const fetchData = async () => {
     try {
-      const { data } = await axios.get(
-        `${Baseurl}api/v1/catogory/getAllCategory`
-      );
-      setData(data);
+      const { data } = await axios.get(`${Baseurl}api/admin/categories`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setData(data.categories);
+      console.log(data.data);
     } catch (e) {
       console.log(e);
     }
@@ -40,8 +43,13 @@ const Category = () => {
       e.preventDefault();
       try {
         const { data } = await axios.post(
-          `${Baseurl}api/v1/admin/category/new`,
-          fd
+          `${Baseurl}api/admin/categories`,
+          fd,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
         );
         showMsg("Success", "Category Created", "success");
         props.onHide();
@@ -76,7 +84,7 @@ const Category = () => {
               <Form.Label>Name</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Banner"
+                placeholder="category name ..."
                 required
                 onChange={(e) => setDesc(e.target.value)}
               />
@@ -94,7 +102,12 @@ const Category = () => {
   const deleteData = async (id) => {
     try {
       const { data } = await axios.delete(
-        `${Baseurl}api/v1/admin/delete/cat/${id}`
+        `${Baseurl}api/admin/categories/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
       fetchData();
       showMsg("Success", "Category Removed !", "success");
@@ -120,7 +133,7 @@ const Category = () => {
               setModalShow(true);
             }}
           >
-            Creare New
+            Create New
           </button>
         </div>
 
@@ -134,7 +147,7 @@ const Category = () => {
               </tr>
             </thead>
             <tbody>
-              {data?.categories?.map((i, index) => (
+              {data?.map((i, index) => (
                 <tr key={index}>
                   <td>
                     <img

@@ -9,7 +9,6 @@ import Modal from "react-bootstrap/Modal";
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 
-
 function MyVerticallyCenteredModal(props) {
   return (
     <Modal
@@ -40,7 +39,7 @@ function MyVerticallyCenteredModal(props) {
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicPassword">
               <Form.Label>Profile Image</Form.Label>
-              <Form.Control type="file"/>
+              <Form.Control type="file" />
             </Form.Group>
             <Button variant="outline-success" type="submit">
               Edit
@@ -48,21 +47,15 @@ function MyVerticallyCenteredModal(props) {
           </Form>
         </Container>
       </Modal.Body>
-
     </Modal>
   );
 }
 
-
-
 const Navbar = ({ hamb, setHamb }) => {
   const [modalShow, setModalShow] = useState(false);
 
-
-
   return (
     <>
-      
       <MyVerticallyCenteredModal
         show={modalShow}
         onHide={() => setModalShow(false)}
@@ -96,7 +89,6 @@ const Navbar = ({ hamb, setHamb }) => {
           onClick={() => setModalShow(true)}
           className="text-2xl sm:text-3xl font-bold text-[rgb(241,146,46)] cursor-pointer"
         />
-  
       </div>
     </>
   );

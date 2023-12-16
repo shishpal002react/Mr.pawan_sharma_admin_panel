@@ -10,16 +10,16 @@ import { Baseurl, Auth, showMsg } from "../../../../../Baseurl";
 
 const Users = () => {
   const [data, setData] = useState([]);
-  const token = localStorage.getItem("token");
 
   const fetchData = async () => {
     try {
-      const { data } = await axios.get(`${Baseurl}api/v1/admin/users`, {
+      const { data } = await axios.get(`${Baseurl}api/admin/users`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      setData(data);
+      console.log("user data", data.data);
+      setData(data.users);
     } catch (err) {
       console.log(err);
     }
@@ -31,14 +31,11 @@ const Users = () => {
 
   const deleteData = async (id) => {
     try {
-      const { data } = await axios.delete(
-        `${Baseurl}api/v1/admin/user/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const { data } = await axios.delete(`${Baseurl}api/admin/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       fetchData();
       const msg = data.message;
       showMsg("Success", msg, "success");
@@ -52,7 +49,7 @@ const Users = () => {
       <section>
         <div className="pb-4  w-full flex justify-between items-center Heading_Container">
           <span className="tracking-widest text-slate-900 font-semibold uppercase ">
-            All Users ( Total : {data?.total} )
+            All Users ( Total : {data?.length} )
           </span>
         </div>
         {/* Add Form */}
@@ -64,15 +61,17 @@ const Users = () => {
                 <th>Name</th>
                 <th>Mobile No.</th>
                 <th>Email</th>
+                <th>User Type</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              {data?.users?.map((i, index) => (
+              {data?.map((i, index) => (
                 <tr key={index}>
-                  <td>{i.name}</td>
-                  <td>{i.phone}</td>
+                  <td>{i.userName}</td>
+                  <td>{i.mobileNumber}</td>
                   <td>{i.email}</td>
+                  <td>{i.userType}</td>
                   <td>
                     <i
                       className="fa-solid fa-trash"

@@ -1,206 +1,210 @@
 /** @format */
-
-import React, { useEffect, useState } from "react";
-import { IoMdClose } from "react-icons/io";
-import { AiFillEdit, AiFillDelete, AiFillEye } from "react-icons/ai";
+import React, { useEffect } from "react";
 import HOC from "../../layout/HOC";
-import axios from "axios";
-import { toast } from "react-toastify";
 import Table from "react-bootstrap/Table";
-import { useNavigate } from "react-router-dom";
-import Form from "react-bootstrap/Form";
-import Spin from "../../../../../Component/Spinner";
-
+import { Button, Form } from "react-bootstrap";
+import Modal from "react-bootstrap/Modal";
+import { useState } from "react";
+import axios from "axios";
+import { Baseurl, showMsg } from "../../../../../Baseurl";
 
 const Sub = () => {
-  const [popup, setPopup] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [subCat, setData] = useState([]);
-  const [parentCategory, setP] = useState("");
-  const [subcat, setS] = useState("");
-  const [parentC, setParentC] = useState([]);
+  const [modalShow, setModalShow] = React.useState(false);
+  const [edit, setEdit] = useState(false);
+  const [data, setData] = useState([]);
 
-  //  Admin Authorization
-  const token = localStorage.getItem("token");
-  const Auth = { headers: { Authorization: `Bearer ${token} ` } };
-
-  // Add Sub-Category
-  const addSub = async (e) => {
-    e.preventDefault();
-
-    const form = { parentCategory, subCategory: subcat };
-
+  const fetchData = async () => {
     try {
-      const data = await axios.post(
-        "https://desh-deepak-backend.herokuapp.com/api/v1/admin/subCategory/new",
-        form,
-        Auth
-      );
-      toast.success("Sub-Category added successfully");
-      setPopup(false);
-      subCategory();
-    } catch (err) {
-      console.log(err);
-      toast.error(err?.response?.data?.message);
-    }
-  };
-
-  //-------------------------------------------------
-
-  // All Sub-Categories
-
-  const subCategory = async () => {
-    setLoading(true);
-    try {
-      const { data } = await axios.get(
-        "https://desh-deepak-backend.herokuapp.com/api/v1/admin/subCategory",
-        Auth
-      );
-      setData(data);
-      setLoading(false);
-    } catch (err) {
-      console.log(err);
-      toast.error("Check Your Network");
-      setLoading(false);
+      const { data } = await axios.get(`${Baseurl}api/admin/subcategories`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setData(data.subcategories);
+      console.log(data.data);
+    } catch (e) {
+      console.log(e);
     }
   };
 
   useEffect(() => {
-    subCategory();
-    fetchParentCategory();
-  }, [axios, setData, toast]);
+    fetchData();
+  }, []);
 
-  //----------------------------------------------------------
+  function MyVerticallyCenteredModal(props) {
+    const [image, setImage] = useState("");
+    const [desc, setDesc] = useState("");
+    const [category, setCategory] = useState("");
+    const [categoryP, setP] = useState([]);
 
-  // Prent Category
+    const fd = new FormData();
+    fd.append("image", image);
+    fd.append("name", desc);
+    fd.append("category", category);
 
-  const fetchParentCategory = async () => {
-    setLoading(true);
+    const postData = async (e) => {
+      e.preventDefault();
+      try {
+        const { data } = await axios.post(
+          `${Baseurl}api/admin/subcategories`,
+          fd,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        showMsg("Success", "Sub Category Created", "success");
+        props.onHide();
+        fetchData();
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    const fetchCategory = async () => {
+      try {
+        const { data } = await axios.get(`${Baseurl}api/admin/categories`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        setP(data.categories);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    useEffect(() => {
+      if (props.show === true) {
+        fetchCategory();
+      }
+    }, [props]);
+
+    return (
+      <Modal
+        {...props}
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title id="contained-modal-title-vcenter">
+            {edit ? "Edit Category" : "Add Category"}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={postData}>
+            <Form.Group className="mb-3">
+              <Form.Label>Image</Form.Label>
+              <Form.Control
+                type="file"
+                onChange={(e) => setImage(e.target.files[0])}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Sub Category</Form.Label>
+              <Form.Select
+                aria-label="Default select example"
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <option>Open this select menu</option>
+                {categoryP?.map((i, index) => (
+                  <option value={i._id} key={index}>
+                    {" "}
+                    {i.name}{" "}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Sub category name ..."
+                required
+                onChange={(e) => setDesc(e.target.value)}
+              />
+            </Form.Group>
+
+            <Button variant="outline-success" type="submit">
+              Submit
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
+    );
+  }
+
+  const deleteData = async (id) => {
     try {
-      const { data } = await axios.get(
-        "https://desh-deepak-backend.herokuapp.com/api/v1/getAllCategory"
+      const { data } = await axios.delete(
+        `${Baseurl}api/admin/subcategories/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
-      setParentC(data);
-      setLoading(false);
-    } catch (err) {
-      console.log(err);
-      toast.error("Network Error");
-      setLoading(false);
+      fetchData();
+      showMsg("Success", "sub Category Removed !", "success");
+    } catch (e) {
+      console.log(e);
     }
   };
 
-  //---------------------------------------------------------
-
   return (
     <>
+      <MyVerticallyCenteredModal
+        show={modalShow}
+        onHide={() => setModalShow(false)}
+      />
       <section>
-        <div className="pb-4 sticky top-0  w-full flex justify-between items-center bg-white">
+        <div className="pb-4 sticky top-0  w-full flex justify-between items-center Heading_Container">
           <span className="tracking-widest text-slate-900 font-semibold uppercase ">
-            All Sub-Categories
+            All Sub Categories
           </span>
           <button
             onClick={() => {
-              setPopup(!popup);
+              setEdit(false);
+              setModalShow(true);
             }}
-            className="md:py-2 px-3 md:px-4 py-1 rounded-sm bg-[rgb(241,146,46)] text-white tracking-wider"
           >
-            Add Sub-Category
+            Create New
           </button>
         </div>
-        {/* Add Form */}
-        <section
-          className={
-            popup
-              ? "fixed top-0 left-0 wcomp bg-[rgb(0,0,0,0.5)] transition-all duration-150 w-full flex justify-center items-center overflow-y-auto  h-screen "
-              : "hidden"
-          }
-          style={{ maxHeight: "100%", overflow: "auto" }}
-        >
-          <div className="bg-slate-100 overflow-y-auto  lg:w-3/6  md:w-4/6 w-5/6 mx-auto  rounded-lg">
-            <div className="flex sticky top-0 py-3 px-5 bg-slate-100 justify-between">
-              <span className=" font-semibold text-[rgb(241,146,46)] ">
-                Add Sub-Category
-              </span>
-              <div className="text-[rgb(241,146,46)] py-0.5 text-2xl cursor-pointer font-medium tracking-wider">
-                <IoMdClose
-                  onClick={() => {
-                    setPopup(false);
-                  }}
-                />{" "}
-              </div>
-            </div>
-            <form
-              className="grid  grid-cols-1 gap-x-7 gap-y-4 p-4"
-              onSubmit={addSub}
-              style={{ color: "black" }}
-            >
-              <div className="inline-flex  w-full flex-col">
-                <Form.Select
-                  aria-label="Default select example"
-                  onChange={(e) => setP(e.target.value)}
-                >
-                  <option>Select Parent Category</option>
 
-                  {parentC?.categories?.map((i) => (
-                    <option value={i._id}> {i.parentCategory} </option>
-                  ))}
-                </Form.Select>
-              </div>
-
-              <div className="inline-flex  w-full flex-col">
-                <input
-                  type="text"
-                  placeholder="Sub-Category"
-                  style={{
-                    outline: "none",
-                    padding: "5px",
-                    borderRadius: "5px",
-                  }}
-                  onChange={(e) => setS(e.target.value)}
-                />
-              </div>
-              <button
-                type="submit"
-                className="bg-[rgb(241,146,46)] flex items-center justify-center cursor-pointer w-40 hover:bg-[rgb(241,146,46)] py-1 rounded-full"
-              >
-                Add
-              </button>
-            </form>
-          </div>
-        </section>
-
-        <div style={{ maxWidth: "100%", overflow: "auto" }}>
-          <Table style={{ paddingTop: "5%" }}>
+        <div className="table-component">
+          <Table>
             <thead>
-              <tr className=" border-b bg-green-300 shadow-xl text-gray-900">
-                <th> Sub-Category</th>
-                <th>Parent-Category </th>
-                {/* <th>Actions</th> */}
+              <tr>
+                <th>Sub Category Image</th>
+                <th>Sub Category Name</th>
+                <th>Action</th>
               </tr>
             </thead>
-
-            {loading ? (
-              <Spin />
-            ) : (
-              <tbody>
-                {subCat?.data?.map((i, index) => (
-                  <tr key={index} style={{ marginTop: "1%" }}>
-                    <td> {i.subCategory} </td>
-                    <td>
-                      {" "}
-                      {i.parentCategory === null
-                        ? "Prent Category"
-                        : i.parentCategory?.parentCategory}{" "}
-                    </td>
-                    {/* <td>
-                      <span style={{ display: "flex", gap: "5px" }}>
-                        <AiFillDelete color="red" cursor="pointer" />
-                      </span>
-                    </td> */}
-                  </tr>
-                ))}
-              </tbody>
-            )}
+            <tbody>
+              {data?.map((i, index) => (
+                <tr key={index}>
+                  <td>
+                    <img
+                      src={i.image}
+                      alt="CategoryImage"
+                      style={{ width: "100px" }}
+                    />
+                  </td>
+                  <td> {i.name} </td>
+                  <td>
+                    <i
+                      className="fa-solid fa-trash"
+                      onClick={() => deleteData(i._id)}
+                    ></i>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
           </Table>
         </div>
       </section>

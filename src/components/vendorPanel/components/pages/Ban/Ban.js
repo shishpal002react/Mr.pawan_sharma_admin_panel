@@ -14,8 +14,13 @@ const Ban = () => {
 
   const fetchData = async () => {
     try {
-      const { data } = await axios.get(`${Baseurl}api/v1/banner/all`);
+      const { data } = await axios.get(`${Baseurl}api/admin/offers`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       setData(data);
+      console.log(data, "data offers");
     } catch (e) {
       console.log(e);
     }
@@ -27,9 +32,11 @@ const Ban = () => {
 
   const deleteData = async (id) => {
     try {
-      const { data } = await axios.delete(
-        `${Baseurl}api/v1/banner/delete/${id}`
-      );
+      const { data } = await axios.delete(`${Baseurl}api/admin/offers/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       const msg = data.message;
       showMsg("Success", msg, "success");
       fetchData();
@@ -41,32 +48,35 @@ const Ban = () => {
   function MyVerticallyCenteredModal(props) {
     const [image, setImage] = useState("");
     const [desc, setDesc] = useState("");
-
-    const postthumbImage = (e) => {
-      const data = new FormData();
-      data.append("file", e.target.files[0]);
-      data.append("upload_preset", "ml_default");
-      data.append("cloud_name", "dbcnha741");
-      fetch("https://api.cloudinary.com/v1_1/dbcnha741/image/upload", {
-        method: "post",
-        body: data,
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          setImage(data.url);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    };
+    const [product, setProduct] = useState("");
+    const [title, setTitle] = useState("");
+    const [code, setCode] = useState("");
+    const [discountPercentage, setDiscountPercentage] = useState("");
+    const [validFrom, setValidForm] = useState("");
+    const [validTo, setValidTo] = useState("");
 
     const postData = async (e) => {
       e.preventDefault();
+      const formdata = new FormData();
+      formdata.append("product", product);
+      formdata.append("title", title);
+      formdata.append("description", desc);
+      formdata.append("code", code);
+      formdata.append("discountPercentage", discountPercentage);
+      formdata.append("validFrom", validFrom);
+      formdata.append("validTo", validTo);
+      formdata.append("image", image);
+
       try {
-        const { data } = await axios.post(`${Baseurl}api/v1/banner/add`, {
-          image,
-          desc,
-        });
+        const { data } = await axios.post(
+          `${Baseurl}api/admin/offers`,
+          formdata,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         fetchData();
         props.onHide();
         showMsg("Success", "Banner Created ! ", "success");
@@ -74,6 +84,26 @@ const Ban = () => {
         console.log(e);
       }
     };
+
+    const [showProduct, setShowProduct] = useState([]);
+    const fetchData = async () => {
+      try {
+        const { data } = await axios.get(`${Baseurl}api/admin/products`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        setShowProduct(data.products);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    useEffect(() => {
+      if (props.show === true) {
+        fetchData();
+      }
+    }, [props]);
 
     return (
       <Modal
@@ -96,17 +126,85 @@ const Ban = () => {
             onSubmit={postData}
           >
             <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Image</Form.Label>
-              <Form.Control type="file" onChange={(e) => postthumbImage(e)} />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Label>Name</Form.Label>
+              <Form.Label>Title</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Banner"
                 required
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Product</Form.Label>
+              <Form.Select
+                aria-label="Default select example"
+                onChange={(e) => setProduct(e.target.value)}
+              >
+                <option>Open this select menu</option>
+                {showProduct?.map((i, index) => (
+                  <option value={i._id} key={index}>
+                    {" "}
+                    {i.productName}{" "}
+                  </option>
+                ))}
+              </Form.Select>
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Image</Form.Label>
+              <Form.Control
+                type="file"
+                onChange={(e) => setImage(e.target.files[0])}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Description</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Description"
+                required
+                value={desc}
                 onChange={(e) => setDesc(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Code</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Description"
+                required
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Discount Percentage</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="discountPercentage"
+                required
+                value={discountPercentage}
+                onChange={(e) => setDiscountPercentage(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Valid From</Form.Label>
+              <Form.Control
+                type="date"
+                placeholder="Date ..."
+                required
+                value={validFrom}
+                onChange={(e) => setValidForm(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <Form.Label>Valid To</Form.Label>
+              <Form.Control
+                type="date"
+                placeholder="discountPercentage"
+                required
+                value={validTo}
+                onChange={(e) => setValidTo(e.target.value)}
               />
             </Form.Group>
 

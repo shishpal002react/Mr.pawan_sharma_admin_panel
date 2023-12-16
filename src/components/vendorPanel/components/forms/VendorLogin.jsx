@@ -22,17 +22,23 @@ const VendorLogin = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { data } = await axios.post(`${Baseurl}api/v1/login`, {
-        phone,
-        password,
+      const { data } = await axios.post(`${Baseurl}api/admin/login`, {
+        email: phone,
+        password: password,
       });
       localStorage.setItem("token", data?.token);
+      localStorage.setItem("userId", data?.data?._id);
       showMsg("Success", "Welcome Admin", "success");
       setLoading(false);
       navigate("/vendorDashboard");
     } catch (err) {
       console.log(err);
-      toast.error(err?.response?.data);
+      toast.error(
+        err?.response?.data?.message
+          ? err?.response?.data?.message
+          : "SomeThing is wrong"
+      );
+
       setLoading(false);
     }
   };
@@ -56,9 +62,8 @@ const VendorLogin = () => {
               }}
             >
               <input
-                type="text"
-                format="tel"
-                placeholder="1234560789"
+                type="email"
+                placeholder="Email address"
                 required
                 onChange={(e) => setPhone(e.target.value)}
                 className="outline-none px-0.5  bg-transparent tracking-wider w-full"
@@ -96,7 +101,6 @@ const VendorLogin = () => {
             <button
               type="submit"
               className="py-2 cursor-pointer tracking-wider bg-[#242424] text-[#fff] flex justify-center items-center w-full rounded-md font-medium   "
-              
             >
               {loading ? (
                 <Oval height={30} secondaryColor="#fff" color="#fff" />
@@ -105,12 +109,29 @@ const VendorLogin = () => {
                   <span className="flex items-center justify-center">
                     LOG In
                   </span>
-
                   <BiLogInCircle className="pl-1.5 text-2xl" />
                 </div>
               )}
             </button>
-  
+            <button
+              onClick={() => navigate("/vendorLogin")}
+              className="py-2 cursor-pointer tracking-wider bg-[#242424] text-[#fff] flex justify-center items-center w-full rounded-md font-medium   "
+            >
+              <div className="flex items-center">
+                <span className="flex items-center justify-center">
+                  Vendor Login
+                </span>
+                <BiLogInCircle className="pl-1.5 text-2xl" />
+              </div>
+            </button>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <p
+                onClick={() => navigate("/adminRegister")}
+                className="cursor-pointer text-white"
+              >
+                New Admin Register
+              </p>
+            </div>
           </section>
         </form>
       </div>
