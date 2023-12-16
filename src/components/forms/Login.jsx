@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Oval } from "react-loader-spinner";
 import axios from "axios";
-import { Baseurl, showMsg } from "../../Baseurl";
+import { Baseurl , showMsg } from "../../Baseurl";
 
 const Login = () => {
   const [pass, setPass] = useState(false);
@@ -21,25 +21,18 @@ const Login = () => {
   const submitHandler = async (e) => {
     e.preventDefault();
     setLoading(true);
-
     try {
-      const { data } = await axios.post(`${Baseurl}api/vendor/login`, {
+      const { data } = await axios.post(`${Baseurl}api/v1/vender/login`, {
         email,
         password,
       });
       localStorage.setItem("token", data.token);
-
-      localStorage.setItem("userId", data.data._id);
+      navigate("/dashboard");
       showMsg("Success", "Welcome Vendor", "success");
       setLoading(false);
-      navigate("/adminDashboard");
     } catch (err) {
       console.log(err);
-      toast.error(
-        err?.response?.data?.message
-          ? err?.response?.data?.message
-          : "SomeThing is wrong"
-      );
+      toast.error(err?.response?.data?.message);
       setLoading(false);
     }
   };
@@ -109,12 +102,6 @@ const Login = () => {
             >
               Admin Panel
             </button>
-            <p
-              onClick={() => navigate("/vendorNewRegister")}
-              className="cursor-pointer "
-            >
-              New Vendor Register
-            </p>
           </section>
         </form>
       </div>

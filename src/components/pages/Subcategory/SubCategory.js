@@ -9,8 +9,7 @@ import { toast } from "react-toastify";
 import Table from "react-bootstrap/Table";
 import { useNavigate } from "react-router-dom";
 import Form from "react-bootstrap/Form";
-import Spin from "../../../../../Component/Spinner";
-
+import Spin from "../../../Component/Spinner";
 
 const Sub = () => {
   const [popup, setPopup] = useState(false);
@@ -21,7 +20,7 @@ const Sub = () => {
   const [parentC, setParentC] = useState([]);
 
   //  Admin Authorization
-  const token = localStorage.getItem("token");
+  const token = localStorage.getItem("VendorToken");
   const Auth = { headers: { Authorization: `Bearer ${token} ` } };
 
   // Add Sub-Category
@@ -32,7 +31,7 @@ const Sub = () => {
 
     try {
       const data = await axios.post(
-        "https://desh-deepak-backend.herokuapp.com/api/v1/admin/subCategory/new",
+        "https://desh-deepak-backend.herokuapp.com/api/v1/vender/subCategory",
         form,
         Auth
       );
@@ -53,7 +52,7 @@ const Sub = () => {
     setLoading(true);
     try {
       const { data } = await axios.get(
-        "https://desh-deepak-backend.herokuapp.com/api/v1/admin/subCategory",
+        "https://desh-deepak-backend.herokuapp.com/api/v1/vender/subCategory",
         Auth
       );
       setData(data);
@@ -78,7 +77,7 @@ const Sub = () => {
     setLoading(true);
     try {
       const { data } = await axios.get(
-        "https://desh-deepak-backend.herokuapp.com/api/v1/getAllCategory"
+        "https://desh-deepak-backend.herokuapp.com/api/v1/vender/categories" , Auth
       );
       setParentC(data);
       setLoading(false);
@@ -91,6 +90,16 @@ const Sub = () => {
 
   //---------------------------------------------------------
 
+  // Delete Sub-Category
+
+  const deleteSubCat = async (id) => {
+    try{
+      const data = await axios.delete(``)
+     }catch(err){
+      console.log(err)
+    }
+  }
+ 
   return (
     <>
       <section>
@@ -175,7 +184,7 @@ const Sub = () => {
               <tr className=" border-b bg-green-300 shadow-xl text-gray-900">
                 <th> Sub-Category</th>
                 <th>Parent-Category </th>
-                {/* <th>Actions</th> */}
+                <th>Actions</th>
               </tr>
             </thead>
 
@@ -183,20 +192,15 @@ const Sub = () => {
               <Spin />
             ) : (
               <tbody>
-                {subCat?.data?.map((i, index) => (
+                {subCat?.data?.[0]?.map((i, index) => (
                   <tr key={index} style={{ marginTop: "1%" }}>
                     <td> {i.subCategory} </td>
+                    <td>{i.parentCategory}</td>
                     <td>
-                      {" "}
-                      {i.parentCategory === null
-                        ? "Prent Category"
-                        : i.parentCategory?.parentCategory}{" "}
-                    </td>
-                    {/* <td>
                       <span style={{ display: "flex", gap: "5px" }}>
                         <AiFillDelete color="red" cursor="pointer" />
                       </span>
-                    </td> */}
+                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -18,13 +18,12 @@ const Coupon = () => {
 
   const fetchData = async () => {
     try {
-      const { data } = await axios.get(`${Baseurl}api/admin/coupon`, {
+      const { data } = await axios.get(`${Baseurl}api/v1/coupon/all`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      setData(data.data);
-      console.log(data.data, "coupon data");
+      setData(data);
     } catch (e) {
       console.log(e);
     }
@@ -36,28 +35,17 @@ const Coupon = () => {
 
   function MyVerticallyCenteredModal(props) {
     const [couponCode, setCouponCode] = useState("");
-    const [image, setImage] = useState();
     const [activationDate, setAD] = useState("");
     const [expirationDate, setEd] = useState("");
     const [discount, setDiscount] = useState("");
-    const [discountType, setDiscountType] = useState("");
-    const [discription, setDiscription] = useState("");
+    const [minOrder, setMinOrder] = useState("");
 
     const postData = async (e) => {
       e.preventDefault();
-      const formdata = new FormData();
-      formdata.append("code", couponCode);
-      formdata.append("description", discription);
-      formdata.append("discountType", discountType);
-      formdata.append("discountValue", discount);
-      formdata.append("startDate", activationDate);
-      formdata.append("expiryDate", expirationDate);
-      formdata.append("image", image);
-
       try {
         const { data } = await axios.post(
-          `${Baseurl}api/admin/coupon`,
-          formdata,
+          `${Baseurl}api/v1/coupon`,
+          { couponCode, activationDate, expirationDate, discount, minOrder },
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -95,13 +83,6 @@ const Coupon = () => {
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicPassword">
-              <Form.Label>Coupon Image</Form.Label>
-              <Form.Control
-                type="file"
-                onChange={(e) => setImage(e.target.files[0])}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicPassword">
               <Form.Label>Activation Date</Form.Label>
               <Form.Control
                 type="date"
@@ -116,14 +97,6 @@ const Coupon = () => {
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicPassword">
-              <Form.Label>Coupon Discription</Form.Label>
-              <Form.Control
-                type="text"
-                value={discription}
-                onChange={(e) => setDiscription(e.target.value)}
-              />
-            </Form.Group>
-            <Form.Group className="mb-3" controlId="formBasicPassword">
               <Form.Label>Discount</Form.Label>
               <Form.Control
                 type="number"
@@ -132,12 +105,11 @@ const Coupon = () => {
               />
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicPassword">
-              <Form.Label>Discount Type</Form.Label>
+              <Form.Label>Minimum Order</Form.Label>
               <Form.Control
-                type="text"
-                value={discountType}
-                onChange={(e) => setDiscountType(e.target.value)}
-                placeholder="percentage..."
+                type="number"
+                min={1}
+                onChange={(e) => setMinOrder(e.target.value)}
               />
             </Form.Group>
             <Button variant="primary" type="submit">
@@ -151,7 +123,7 @@ const Coupon = () => {
 
   const deleteData = async (id) => {
     try {
-      await axios.delete(`${Baseurl}api/admin/coupon/${id}`, {
+      const { data } = await axios.delete(`${Baseurl}api/v1/coupon/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -182,26 +154,23 @@ const Coupon = () => {
           <Table>
             <thead>
               <tr>
-                <th>Coupon Image</th>
                 <th>Coupon Code</th>
-
                 <th>Activation Date</th>
                 <th>Expiry Date</th>
                 <th>Discount</th>
+                <th>Minimum Order</th>
                 <th>Actions</th>
               </tr>
             </thead>
 
             <tbody>
-              {data?.map((i, index) => (
+              {data?.coupons?.map((i, index) => (
                 <tr key={index}>
-                  <td>
-                    <img src={i?.image} style={{ width: "50%" }}></img>
-                  </td>
-                  <td> {i.code} </td>
-                  <td> {new Date(i.startDate).toLocaleDateString()} </td>
-                  <td> {new Date(i.expiryDate).toLocaleDateString()} </td>
-                  <td> {i.discountValue} </td>
+                  <td> {i.couponCode} </td>
+                  <td> {i.activationDate.slice(0, 10)} </td>
+                  <td> {i.expirationDate.slice(0, 10)} </td>
+                  <td> {i.discount} </td>
+                  <td> {i.minOrder} </td>
                   <td>
                     <i
                       className="fa-solid fa-trash"

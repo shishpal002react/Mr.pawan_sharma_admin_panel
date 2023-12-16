@@ -32,16 +32,6 @@ const Sidebar = ({ hamb, setHamb }) => {
       name: "Users",
     },
     {
-      icon: <FaUserCircle className="text-xl mr-3" />,
-      link: "/pendingVendor",
-      name: "Pending Vendor",
-    },
-    {
-      icon: <FaUserCircle className="text-xl mr-3" />,
-      link: "/approveVendor",
-      name: "Approve Vendor",
-    },
-    {
       icon: <FiImage className="text-xl mr-3" />,
       link: "/ban",
       name: "Banner",
@@ -55,11 +45,6 @@ const Sidebar = ({ hamb, setHamb }) => {
       icon: <BiCategory className="text-xl mr-3" />,
       link: "/category",
       name: "Categories",
-    },
-    {
-      icon: <BiCategory className="text-xl mr-3" />,
-      link: "/subcategory",
-      name: "Sub Category",
     },
     {
       icon: <FaProductHunt className="text-xl mr-3 rounded-full " />,
@@ -76,46 +61,31 @@ const Sidebar = ({ hamb, setHamb }) => {
       link: "/dis",
       name: "Discount",
     },
-    // {
-    //   icon: <BsFillChatDotsFill className="text-xl mr-3" />,
-    //   link: "/complaint",
-    //   name: "Help&Support",
-    // },
+    {
+      icon: <BsFillChatDotsFill className="text-xl mr-3" />,
+      link: "/complaint",
+      name: "Help&Support",
+    },
     {
       icon: <BsFillCartFill className="text-xl mr-3" />,
       link: "/order",
       name: "Orders",
-    },
-    {
-      icon: <BsFillCartFill className="text-xl mr-3" />,
-      link: "/payment",
-      name: "Payment",
-    },
-    {
-      icon: <BsFillCartFill className="text-xl mr-3" />,
-      link: "/wallet",
-      name: "Wallet",
-    },
-    {
-      icon: <BsFillCartFill className="text-xl mr-3" />,
-      link: "/refer",
-      name: "Refer and Earn",
     },
     // {
     //   icon: <BsFillCartFill className="text-xl mr-3" />,
     //   link: "/deliveryPartner",
     //   name: "Delivery Partner",
     // },
-    // {
-    //   icon: <BsFillCartFill className="text-xl mr-3" />,
-    //   link: "/privacy",
-    //   name: "Privacy Policy",
-    // },
-    // {
-    //   icon: <BsFillCartFill className="text-xl mr-3" />,
-    //   link: "/term",
-    //   name: "Terms",
-    // },
+    {
+      icon: <BsFillCartFill className="text-xl mr-3" />,
+      link: "/privacy",
+      name: "Privacy Policy",
+    },
+    {
+      icon: <BsFillCartFill className="text-xl mr-3" />,
+      link: "/term",
+      name: "Terms",
+    },
   ];
 
   const logOut = () => {

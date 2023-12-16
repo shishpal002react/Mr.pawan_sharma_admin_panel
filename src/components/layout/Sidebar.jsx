@@ -3,10 +3,10 @@
 import React from "react";
 import { RiCloseLine } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
-import { BiLogOutCircle, BiCategory } from "react-icons/bi";
+import { BiLogOutCircle , BiCategory } from "react-icons/bi";
 import { TbDiscount } from "react-icons/tb";
-import { FaProductHunt } from "react-icons/fa";
-import { BsFillCartFill } from "react-icons/bs";
+import { FaProductHunt   } from "react-icons/fa";
+import {BsFillCartFill} from 'react-icons/bs'
 
 import { MdDashboardCustomize } from "react-icons/md";
 import { toast } from "react-toastify";
@@ -17,29 +17,29 @@ const Sidebar = ({ hamb, setHamb }) => {
   const nav = [
     {
       icon: <MdDashboardCustomize className="text-xl mr-3" />,
-      link: "/adminDashboard",
+      link: "/dashboard",
       name: "Dashboard",
     },
     {
       icon: <FaProductHunt className="text-xl mr-3" />,
-      link: "/venderProduct",
+      link: "/feedback",
       name: "Products",
     },
     {
       icon: <BiCategory className="text-xl mr-3" />,
-      link: "/vendorCategory",
+      link: "/userkundli",
       name: "Categories",
     },
     {
       icon: <BsFillCartFill className="text-xl mr-3" />,
-      link: "/vendorSubCategory",
-      name: "SubCategory",
+      link: "/time",
+      name: "Orders",
     },
     {
       icon: <TbDiscount className="text-xl mr-3" />,
-      link: "/VendorOrder",
-      name: "Order",
-    },
+      link: "/discount",
+      name: "Coupons",
+    }
   ];
 
   const logOut = () => {
