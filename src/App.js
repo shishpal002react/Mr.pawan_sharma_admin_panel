@@ -42,7 +42,6 @@ function App() {
       <Routes>
         <Route path="/" element={<VendorLogin />} />
         <Route path="/adminRegister" element={<VendorRegister />} />
-        UpdateAdminProFile
         <Route path="/updateadminprofile" element={<UpdateAdminProFile />} />
         <Route path="/vendorDashboard" element={<VendorDashboard />} />
         <Route path="/pendingVendor" element={<PendingVendor />} />

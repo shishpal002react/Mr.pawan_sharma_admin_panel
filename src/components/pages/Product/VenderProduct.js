@@ -417,7 +417,7 @@ const VenderProduct = () => {
       />
       <section>
         <div className="pb-4  w-full flex justify-between items-center Heading_Container">
-          <span className="tracking-widest text-slate-900 font-semibold uppercase ">
+          <span className="tracking-widest text-slate-900 font-semibold uppercase text-black">
             All Products
           </span>
           <button
